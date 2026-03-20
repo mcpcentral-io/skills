@@ -1,0 +1,13 @@
+{
+  "name": "mcpcentral-skills",
+  "version": "1.0.0",
+  "description": "MCPCentral skills collection for discovering and configuring MCP servers",
+  "plugins": [
+    {
+      "id": "mcpcentral",
+      "description": "MCP server discovery, search, and setup configuration",
+      "skills": ["mcpcentral"],
+      "strict": false
+    }
+  ]
+}
