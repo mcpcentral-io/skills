@@ -19,14 +19,14 @@ Extract text from any input type and generate AI summaries using local LLMs.
 | Input Type | Extensions | Extraction Method |
 |------------|------------|-------------------|
 | Image | png, jpg, jpeg, gif, bmp, tiff, webp | `local-vision` MCP → OCR |
-| Audio | mp3, wav, ogg, flac, m4a | Whisper transcription |
-| Video | mp4, webm, mkv, avi, mov | Extract audio → Whisper |
-| PDF | pdf | Claude native or pypdf |
-| Office | docx, xlsx, pptx | Claude native or python-docx/openpyxl |
+| Audio | mp3, wav, ogg, flac, m4a | faster-whisper transcription |
+| Video | mp4, webm, mkv, avi, mov | Extract audio → faster-whisper |
+| PDF | pdf | MarkItDown → Claude analysis |
+| Office | docx, xlsx, pptx | MarkItDown → Claude analysis |
 | Spreadsheet | csv, tsv | Direct read + parsing |
 | Data | json, jsonl | Parse and format |
 | Text | md, txt, html | Direct read |
-| URL | http://, https:// | Exa MCP extraction |
+| URL | http://, https:// | Exa → Firecrawl → Jina Reader (tiered) |
 
 ## MCP Server Requirements
 
@@ -47,11 +47,11 @@ uvx mcp-ollama
 
 **Images** → Call `local-vision` MCP tool for OCR. Preserve tables as markdown, maintain reading order.
 
-**Audio/Video** → Use Whisper (model at `/Users/cam/.cache/whisper/large-v3.pt`). Include timestamps if available.
+**Audio/Video** → Use `faster-whisper` with model `large-v3` (path: `/Users/cam/.cache/whisper/large-v3.pt`). Include timestamps if available. For speaker diarization or word-level timestamps, use WhisperX instead. Alternatively, use `local-stt-mcp` if configured (removes Python scripting requirement).
 
-**Documents** → Use Claude's native reading capabilities or appropriate Python library.
+**Documents (PDF, Office)** → Run `markitdown` to extract structured Markdown first, then pass to Claude for analysis. Fall back to Claude native reading when MarkItDown fails (scanned PDFs, complex visual content, charts/diagrams).
 
-**URLs** → Call `exa_get_contents` tool with the URL.
+**URLs** → Tiered extraction: (1) Call `exa_get_contents` with the URL. (2) If JS-heavy or Exa fails, use Firecrawl MCP `scrape`. (3) Final fallback: fetch `https://r.jina.ai/{url}` for clean Markdown via Jina Reader.
 
 ### Step 2: Select Prompt
 
@@ -88,7 +88,7 @@ Return standardized JSON:
   "summary": "AI-generated summary...",
   "metadata": {
     "source_type": "image|audio|pdf|...",
-    "filename": "original.ext",
+    "filename": "original.ext (or full URL for web sources)",
     "processed_date": "ISO timestamp"
   }
 }
@@ -107,6 +107,7 @@ Output directory: `/Users/cam/Downloads/to-text-skills-output/output/`
 - **Per-item isolation**: Errors don't stop batch processing
 - **Graceful fallbacks**: Try alternative methods before failing
 - **Clear error objects**: Return `{"error": "message", "metadata": {...}}` for failures
+- **Unsupported extensions**: If the file extension is not in the Input Routing table, immediately return the error object — do not attempt extraction
 
 ## References
 

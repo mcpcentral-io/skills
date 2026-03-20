@@ -38,18 +38,18 @@
 
 | Extension | MIME Type | Processor |
 |-----------|-----------|-----------|
-| .pdf | application/pdf | Claude native / pypdf |
-| .docx | application/vnd.openxmlformats-officedocument.wordprocessingml.document | Claude native / python-docx |
-| .doc | application/msword | Legacy Word |
-| .pptx | application/vnd.openxmlformats-officedocument.presentationml.presentation | Claude native / python-pptx |
-| .ppt | application/vnd.ms-powerpoint | Legacy PowerPoint |
+| .pdf | application/pdf | MarkItDown → Claude analysis (fallback: Claude native) |
+| .docx | application/vnd.openxmlformats-officedocument.wordprocessingml.document | MarkItDown → Claude analysis |
+| .doc | application/msword | MarkItDown → Claude analysis (legacy Word) |
+| .pptx | application/vnd.openxmlformats-officedocument.presentationml.presentation | MarkItDown → Claude analysis |
+| .ppt | application/vnd.ms-powerpoint | MarkItDown → Claude analysis (legacy PowerPoint) |
 
 ## Spreadsheets
 
 | Extension | MIME Type | Processor |
 |-----------|-----------|-----------|
-| .xlsx | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet | Claude native / openpyxl |
-| .xls | application/vnd.ms-excel | Legacy Excel |
+| .xlsx | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet | MarkItDown → Claude analysis |
+| .xls | application/vnd.ms-excel | MarkItDown → Claude analysis (legacy Excel) |
 | .csv | text/csv | Direct read / pandas |
 | .tsv | text/tab-separated-values | Direct read / pandas |
 
@@ -72,9 +72,13 @@
 
 ## URLs
 
-Any valid `http://` or `https://` URL is processed via Exa MCP.
+Any valid `http://` or `https://` URL is processed via a tiered fallback chain:
+
+1. **Exa MCP** (`exa_get_contents`) — primary; fast, good metadata
+2. **Firecrawl MCP** (`scrape`) — for JS-heavy SPAs or when Exa fails
+3. **Jina Reader** (`https://r.jina.ai/{url}`) — free fallback via HTTP fetch, returns clean Markdown
 
 **Limitations:**
-- Paywalled content may be blocked
-- JavaScript-rendered content may be incomplete
-- Rate limits apply per Exa plan
+- Paywalled content may be blocked at all tiers
+- Social media pages have limited support
+- Rate limits apply per Exa/Firecrawl plan

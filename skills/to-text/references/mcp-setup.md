@@ -14,10 +14,12 @@ claude mcp add -s project local-vision local-vision serve .
 - Input: Image file path or base64 data
 - Output: Extracted text with confidence scores
 
-**Fallback:** DeepSeek-OCR via Ollama
+**Fallback:** `qwen2.5-vl` via Ollama (capable vision-language model)
 ```bash
-ollama pull deepseek-vl2:latest
+ollama pull qwen2.5-vl:latest
 ```
+
+**Cloud alternative:** Mistral OCR MCP offers high-accuracy cloud OCR when local options are insufficient.
 
 ### 2. mcp-ollama (Summarization)
 
@@ -60,13 +62,73 @@ ollama pull qwen3:latest  # Recommended model
 export EXA_API_KEY="your-key-here"
 ```
 
-## Optional: Whisper MCP
+### 4. Firecrawl MCP (URL Extraction — JS-heavy sites)
 
-If available, use Whisper MCP for transcription. Otherwise, use Python directly:
+```bash
+/plugin marketplace add mendableai/firecrawl-mcp-server
+```
+
+**Tool Interface:**
+- Tool: `scrape`
+- Input: `{ "url": "https://..." }`
+- Output: Rendered page content as Markdown
+
+**API Key:**
+```bash
+export FIRECRAWL_API_KEY="your-key-here"
+```
+
+Used as fallback when Exa fails or site requires JavaScript rendering.
+
+## Optional Servers
+
+### local-stt-mcp (Audio Transcription)
+
+MCP server using whisper.cpp, optimized for Apple Silicon. Removes the need for direct Python scripting.
+
+```bash
+# Install SmartLittleApps/local-stt-mcp
+claude mcp add -s project local-stt-mcp local-stt-mcp serve .
+```
+
+Supports diarization and runs faster-whisper/whisper.cpp under the hood.
+
+### MarkItDown (Document Extraction)
+
+Converts PDF, DOCX, PPTX, XLSX, HTML, CSV → clean Markdown for LLM ingestion.
+
+```bash
+pip install markitdown
+```
+
+**Usage:**
+```python
+from markitdown import MarkItDown
+md = MarkItDown()
+result = md.convert("document.pdf")
+print(result.text_content)
+```
+
+**Premium alternative:** Docling (IBM) for complex layouts, merged table cells, multi-column documents, and formulas:
+```bash
+pip install docling
+```
+
+## Audio Transcription (Python fallback)
+
+If `local-stt-mcp` is not available, use `faster-whisper` directly (4-6x faster than original `whisper` library, identical accuracy, same model weights):
 
 ```python
-import whisper
-model = whisper.load_model("large-v3")
+from faster_whisper import WhisperModel
+model = WhisperModel("large-v3", device="auto")
+segments, info = model.transcribe(audio_path)
+text = " ".join(seg.text for seg in segments)
+```
+
+For speaker diarization or word-level timestamps, use WhisperX:
+```python
+import whisperx
+model = whisperx.load_model("large-v3", device="cpu")
 result = model.transcribe(audio_path)
 ```
 
@@ -91,5 +153,8 @@ curl http://localhost:11434/api/generate -d '{"model":"qwen3:latest","prompt":"t
 |------|-------|-------|
 | General summary | qwen3:latest | Good balance |
 | Long documents | qwen3:32b | Better context |
+| Lightweight/fast | llama3.3:8b | Good for 8GB RAM |
 | Technical | codellama:latest | Code-aware |
 | Fast | phi3:mini | Fastest option |
+
+**Note:** Qwen3.5 does not yet have Ollama GGUF support (llama.cpp only) — use `qwen3:latest` for now.
