@@ -64,14 +64,14 @@ PROMPT_MAP = {
 # Type to processor mapping
 PROCESSOR_MAP = {
     'image': 'local-vision MCP',
-    'audio': 'whisper',
-    'video': 'whisper (extract audio first)',
-    'pdf': 'claude native or pypdf',
-    'office': 'claude native or python-docx/openpyxl',
+    'audio': 'faster-whisper',
+    'video': 'faster-whisper (extract audio first)',
+    'pdf': 'markitdown → claude analysis',
+    'office': 'markitdown → claude analysis',
     'spreadsheet': 'direct read + pandas',
     'data': 'json.load',
     'text': 'direct read',
-    'url': 'exa MCP',
+    'url': 'exa → firecrawl → jina reader',
 }
 
 

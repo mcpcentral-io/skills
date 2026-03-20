@@ -1,6 +1,10 @@
 ---
 name: to-text
-description: "Universal content extraction and summarization skill. Extracts text from images (OCR), audio/video (Whisper), PDFs, Office docs, JSON, Markdown, and URLs—then summarizes via local Ollama. Use when asked to: (1) Extract text from any file type, (2) Transcribe audio/video, (3) OCR images or screenshots, (4) Summarize documents or web content, (5) Process batches of files, (6) Convert content to text format."
+description: "Universal content extraction and summarization skill. Extracts text from images (OCR), audio/video (transcription), PDFs, Office docs, JSON, Markdown, and URLs—then summarizes via local Ollama. Use when asked to: (1) Extract text from any file type, (2) Transcribe audio/video, (3) OCR images or screenshots, (4) Summarize documents or web content, (5) Process batches of files, (6) Convert content to text format."
+compatibility: Requires Ollama running locally (qwen3:latest), local-vision MCP server, Python 3.x, and EXA_API_KEY. Optional: FIRECRAWL_API_KEY for JS-heavy URL extraction.
+metadata:
+  author: mcpcentral.io
+  version: "1.1.0"
 ---
 
 # To-Text
@@ -108,6 +112,15 @@ Output directory: `/Users/cam/Downloads/to-text-skills-output/output/`
 - **Graceful fallbacks**: Try alternative methods before failing
 - **Clear error objects**: Return `{"error": "message", "metadata": {...}}` for failures
 - **Unsupported extensions**: If the file extension is not in the Input Routing table, immediately return the error object — do not attempt extraction
+
+## Gotchas
+
+- **Ollama must be running before processing.** `mcp-ollama` will error if `ollama serve` isn't active. Start it first, or fall back to Claude summarization.
+- **MarkItDown fails on scanned PDFs.** Scanned documents produce empty or garbled markdown. Detect this (near-empty `text_content`) and fall back to Claude native reading.
+- **faster-whisper requires `ffmpeg`.** Without `ffmpeg` installed, audio/video transcription fails at format conversion. Install via `brew install ffmpeg` or `apt install ffmpeg`.
+- **Jina Reader URL format is `https://r.jina.ai/{full_url}`.** The `{full_url}` must include the `https://` scheme — e.g., `https://r.jina.ai/https://example.com/article`.
+- **Output directory is created automatically.** `scripts/save_output.py` uses `mkdir(parents=True, exist_ok=True)` — no need to pre-create the output path.
+- **Unsupported extensions must error immediately.** Return `{"error": "...", "metadata": {...}}` for unknown extensions without attempting extraction.
 
 ## References
 

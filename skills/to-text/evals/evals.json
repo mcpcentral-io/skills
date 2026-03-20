@@ -30,7 +30,7 @@
       "prompt": "Transcribe this interview recording: interview.mp3",
       "expected_output": "Standardized JSON with `text` containing the full transcript (with timestamps if present), `summary` generated from the transcript.md prompt, and `metadata` with `source_type: \"audio\"` and the original filename.",
       "assertions": [
-        "Whisper is used for transcription with model at /Users/cam/.cache/whisper/large-v3.pt",
+        "faster-whisper is used for transcription with model large-v3 at /Users/cam/.cache/whisper/large-v3.pt",
         "prompts/transcript.md is loaded and used for summarization",
         "Timestamps are included in the text field if present in the transcript",
         "metadata.source_type is \"audio\"",
@@ -42,7 +42,7 @@
       "prompt": "What does this research paper cover? research_paper.pdf",
       "expected_output": "Standardized JSON with `text` containing the extracted PDF content, `summary` structured with Overview and Key Sections (from document.md prompt), and `metadata` with `source_type: \"pdf\"` and the original filename.",
       "assertions": [
-        "Claude's native reading capabilities are used for PDF extraction (no external MCP call)",
+        "markitdown is used to extract the PDF content to markdown, then Claude analyzes the output",
         "prompts/document.md is loaded and used for summarization",
         "The summary includes Overview and Key Sections",
         "metadata.source_type is \"pdf\"",
@@ -52,10 +52,10 @@
     {
       "id": 5,
       "prompt": "Process these three files: slides.pptx, photo.png, unknown.xyz",
-      "expected_output": "Three independent result objects: slides.pptx returns complete JSON using Claude native extraction, photo.png returns complete JSON using local-vision MCP, and unknown.xyz returns an error object `{\"error\": \"...\", \"metadata\": {...}}` without stopping the batch.",
+      "expected_output": "Three independent result objects: slides.pptx returns complete JSON using markitdown extraction then Claude analysis, photo.png returns complete JSON using local-vision MCP, and unknown.xyz returns an error object `{\"error\": \"...\", \"metadata\": {...}}` without stopping the batch.",
       "assertions": [
         "Each file is processed independently, not as a combined blob",
-        "slides.pptx uses Claude native reading and returns a complete text/summary/metadata result",
+        "slides.pptx uses markitdown for extraction then Claude analysis and returns a complete text/summary/metadata result",
         "photo.png uses local-vision MCP for OCR and returns a complete text/summary/metadata result",
         "unknown.xyz returns an error object with an error message and metadata but does not stop batch processing",
         "The two valid files (slides.pptx and photo.png) return complete results despite the error on unknown.xyz"
