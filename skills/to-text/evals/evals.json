@@ -1,0 +1,65 @@
+{
+  "skill_name": "to-text",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Extract the text from this receipt image: receipt.jpg",
+      "expected_output": "Standardized JSON with `text` containing the OCR'd receipt content (tables/columns preserved as markdown), `summary` generated from the ocr.md prompt, and `metadata` with `source_type: \"image\"` and the original filename.",
+      "assertions": [
+        "local-vision MCP tool is called for OCR extraction",
+        "Tables and columns in the receipt are preserved as markdown in the text field",
+        "prompts/ocr.md is loaded and used for summarization",
+        "Output is a JSON object with text, summary, and metadata fields",
+        "metadata.source_type is \"image\""
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Summarize this article for me: https://example.com/blog/ai-trends-2025",
+      "expected_output": "Standardized JSON with `text` containing the extracted article content, `summary` structured with Key Points and Main Takeaway sections (from url.md prompt), and `metadata` reflecting the URL as source with `source_type: \"url\"`.",
+      "assertions": [
+        "exa_get_contents is called with the provided URL",
+        "prompts/url.md is loaded and used for summarization",
+        "The summary includes Key Points and Main Takeaway sections",
+        "metadata.source_type is \"url\"",
+        "metadata includes the original URL as the filename or source identifier"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Transcribe this interview recording: interview.mp3",
+      "expected_output": "Standardized JSON with `text` containing the full transcript (with timestamps if present), `summary` generated from the transcript.md prompt, and `metadata` with `source_type: \"audio\"` and the original filename.",
+      "assertions": [
+        "Whisper is used for transcription with model at /Users/cam/.cache/whisper/large-v3.pt",
+        "prompts/transcript.md is loaded and used for summarization",
+        "Timestamps are included in the text field if present in the transcript",
+        "metadata.source_type is \"audio\"",
+        "Output is a JSON object with text, summary, and metadata fields"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "What does this research paper cover? research_paper.pdf",
+      "expected_output": "Standardized JSON with `text` containing the extracted PDF content, `summary` structured with Overview and Key Sections (from document.md prompt), and `metadata` with `source_type: \"pdf\"` and the original filename.",
+      "assertions": [
+        "Claude's native reading capabilities are used for PDF extraction (no external MCP call)",
+        "prompts/document.md is loaded and used for summarization",
+        "The summary includes Overview and Key Sections",
+        "metadata.source_type is \"pdf\"",
+        "Output is a JSON object with text, summary, and metadata fields"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Process these three files: slides.pptx, photo.png, unknown.xyz",
+      "expected_output": "Three independent result objects: slides.pptx returns complete JSON using Claude native extraction, photo.png returns complete JSON using local-vision MCP, and unknown.xyz returns an error object `{\"error\": \"...\", \"metadata\": {...}}` without stopping the batch.",
+      "assertions": [
+        "Each file is processed independently, not as a combined blob",
+        "slides.pptx uses Claude native reading and returns a complete text/summary/metadata result",
+        "photo.png uses local-vision MCP for OCR and returns a complete text/summary/metadata result",
+        "unknown.xyz returns an error object with an error message and metadata but does not stop batch processing",
+        "The two valid files (slides.pptx and photo.png) return complete results despite the error on unknown.xyz"
+      ]
+    }
+  ]
+}
