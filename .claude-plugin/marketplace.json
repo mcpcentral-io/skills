@@ -8,6 +8,12 @@
       "description": "MCP server discovery, semantic tool search, and setup configuration",
       "skills": ["mcp-registry"],
       "strict": false
+    },
+    {
+      "id": "to-text",
+      "description": "Universal content extraction and summarization — OCR, audio/video transcription, PDF/Office docs, URLs",
+      "skills": ["to-text"],
+      "strict": false
     }
   ]
 }
