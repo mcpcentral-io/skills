@@ -83,26 +83,7 @@ The `mcp-registry` skill teaches Claude to:
 
 ## Evals
 
-### Skill Evals (`evals/evals.json`)
-
-5 evaluation test cases covering direct REST API usage:
-
-1. Registry search (PostgreSQL servers)
-2. Server detail fetching (filesystem server)
-3. Config generation (GitHub server for Claude Desktop)
-4. Popularity browsing (top 10 by GitHub stars)
-5. Multi-keyword recommendation synthesis (email servers)
-
-### MCP Server Evals (`evals/mcp-server-evals.json`)
-
-6 evaluation test cases covering the unique capabilities of the `mcpcentral-tool-search` MCP server:
-
-1. Semantic search (`search_tools`, mode: semantic)
-2. BM25 keyword search (`search_tools`, mode: bm25)
-3. Hybrid search with RRF fusion (`search_tools`, mode: hybrid)
-4. Tool schema retrieval (`get_tool_schema`)
-5. Similarity-based recommendations (`recommend_tools`, type: similar_to)
-6. Task-based recommendations (`recommend_tools`, type: for_task)
+Each skill and MCP server includes an `evals/` directory with evaluation test cases for validating behavior.
 
 ## Links
 

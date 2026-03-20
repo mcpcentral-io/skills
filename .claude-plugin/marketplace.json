@@ -1,19 +1,31 @@
 {
   "name": "mcpcentral-skills",
-  "version": "1.1.0",
-  "description": "MCPCentral plugin: MCP server discovery skill + semantic tool search MCP server",
+  "owner": {
+    "name": "MCPCentral",
+    "email": "support@mcpcentral.io"
+  },
+  "metadata": {
+    "description": "MCPCentral plugin: MCP server discovery skill + semantic tool search MCP server",
+    "version": "1.1.0"
+  },
   "plugins": [
     {
-      "id": "mcpcentral",
+      "name": "mcpcentral",
       "description": "MCP server discovery, semantic tool search, and setup configuration",
-      "skills": ["mcp-registry"],
-      "strict": false
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/mcp-registry"
+      ]
     },
     {
-      "id": "to-text",
+      "name": "to-text",
       "description": "Universal content extraction and summarization — OCR, audio/video transcription, PDF/Office docs, URLs",
-      "skills": ["to-text"],
-      "strict": false
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/to-text"
+      ]
     }
   ]
 }
