@@ -8,6 +8,7 @@ Discover, search, and configure MCP servers — combining a knowledge skill with
 |-----------|------|-------------|
 | **mcp-registry** | Skill | Teaches Claude how to query the [MCP Registry](https://registry.modelcontextprotocol.io) and [mcpcentral.io](https://mcpcentral.io) REST APIs to find, compare, and generate setup configs for MCP servers |
 | **mcpcentral-tool-search** | MCP Server | Semantic + hybrid search over 1000+ MCP tools and servers via [tools.mcpcentral.io](https://tools.mcpcentral.io), with tool schema lookup, recommendations, and sandboxed code execution |
+| **to-text** | Skill | Universal content extraction and summarization — OCR, audio/video transcription, document conversion, and URL extraction with local LLM summarization via Ollama |
 
 **The skill** handles direct registry API calls — searching by keyword, fetching server details, listing versions, and generating `claude_desktop_config.json` / `.mcp.json` snippets from real package metadata.
 
@@ -73,11 +74,8 @@ The `mcp-registry` skill teaches Claude to:
 │   └── marketplace.json     # Plugin marketplace configuration
 ├── .mcp.json                # Bundled MCP server connection
 ├── skills/
-│   └── mcp-registry/
-│       ├── SKILL.md          # Skill instructions and API reference
-│       └── evals/
-│           ├── evals.json            # 5 skill evaluation test cases
-│           └── mcp-server-evals.json # 6 MCP server evaluation test cases
+│   ├── mcp-registry/         # MCP server discovery skill
+│   └── to-text/              # Universal content extraction skill
 ├── README.md
 ├── .gitattributes
 └── .gitignore
