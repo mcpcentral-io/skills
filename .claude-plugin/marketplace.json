@@ -11,19 +11,11 @@
   "plugins": [
     {
       "name": "mcpcentral",
-      "description": "MCP server discovery, semantic tool search, and setup configuration",
+      "description": "MCP server discovery, semantic tool search, setup configuration, and universal content extraction",
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/mcp-registry"
-      ]
-    },
-    {
-      "name": "to-text",
-      "description": "Universal content extraction and summarization — OCR, audio/video transcription, PDF/Office docs, URLs",
-      "source": "./",
-      "strict": false,
-      "skills": [
+        "./skills/mcp-registry",
         "./skills/to-text"
       ]
     }
