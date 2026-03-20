@@ -53,8 +53,8 @@ ollama pull qwen3:latest  # Recommended model
 ```
 
 **Tool Interface:**
-- Tool: `exa_get_contents`
-- Input: `{ "ids": ["url"], "text": true }`
+- Tool: `crawling_exa`
+- Input: `{ "url": "https://..." }`
 - Output: Extracted page content
 
 **API Key:**

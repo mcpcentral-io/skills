@@ -18,7 +18,7 @@
       "prompt": "Summarize this article for me: https://example.com/blog/ai-trends-2025",
       "expected_output": "Standardized JSON with `text` containing the extracted article content, `summary` structured with Key Points and Main Takeaway sections (from url.md prompt), and `metadata` reflecting the URL as source with `source_type: \"url\"`.",
       "assertions": [
-        "exa_get_contents is called with the provided URL",
+        "crawling_exa is called with the provided URL",
         "prompts/url.md is loaded and used for summarization",
         "The summary includes Key Points and Main Takeaway sections",
         "metadata.source_type is \"url\"",

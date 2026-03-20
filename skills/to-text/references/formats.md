@@ -74,7 +74,7 @@
 
 Any valid `http://` or `https://` URL is processed via a tiered fallback chain:
 
-1. **Exa MCP** (`exa_get_contents`) — primary; fast, good metadata
+1. **Exa MCP** (`crawling_exa`) — primary; fast, good metadata
 2. **Firecrawl MCP** (`scrape`) — for JS-heavy SPAs or when Exa fails
 3. **Jina Reader** (`https://r.jina.ai/{url}`) — free fallback via HTTP fetch, returns clean Markdown
 

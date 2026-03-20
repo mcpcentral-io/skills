@@ -55,7 +55,7 @@ uvx mcp-ollama
 
 **Documents (PDF, Office)** → Run `markitdown` to extract structured Markdown first, then pass to Claude for analysis. Fall back to Claude native reading when MarkItDown fails (scanned PDFs, complex visual content, charts/diagrams).
 
-**URLs** → Tiered extraction: (1) Call `exa_get_contents` with the URL. (2) If JS-heavy or Exa fails, use Firecrawl MCP `scrape`. (3) Final fallback: fetch `https://r.jina.ai/{url}` for clean Markdown via Jina Reader.
+**URLs** → Tiered extraction: (1) Call `crawling_exa` with the URL. (2) If JS-heavy or Exa fails, use Firecrawl MCP `scrape`. (3) Final fallback: fetch `https://r.jina.ai/{url}` for clean Markdown via Jina Reader.
 
 ### Step 2: Select Prompt
 
