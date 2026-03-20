@@ -1,12 +1,12 @@
 {
   "name": "mcpcentral-skills",
-  "version": "1.0.0",
-  "description": "MCPCentral skills collection for discovering and configuring MCP servers",
+  "version": "1.1.0",
+  "description": "MCPCentral plugin: MCP server discovery skill + semantic tool search MCP server",
   "plugins": [
     {
       "id": "mcpcentral",
-      "description": "MCP server discovery, search, and setup configuration",
-      "skills": ["mcpcentral"],
+      "description": "MCP server discovery, semantic tool search, and setup configuration",
+      "skills": ["mcp-registry"],
       "strict": false
     }
   ]
