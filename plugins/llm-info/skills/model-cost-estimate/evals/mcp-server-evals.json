@@ -1,0 +1,27 @@
+{
+  "skill_name": "mcpcentral-llm-info",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "get_model",
+      "prompt": "Fetch pricing for anthropic/claude-haiku-4-5 to estimate cost.",
+      "expected_output": "Full model record with input_price_per_mtok, output_price_per_mtok, cache_read_price_per_mtok, cache_write_price_per_mtok, supports_prompt_caching, tpm_limit, rpm_limit.",
+      "assertions": [
+        "get_model is called with provider_id='anthropic' and model_id='claude-haiku-4-5'",
+        "All pricing fields are present (cache_* may be null if no caching)",
+        "supports_prompt_caching is a 0/1 integer flag"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "list_models",
+      "prompt": "List models with prompt caching under $5 per MTok input.",
+      "expected_output": "A list filtered to capability=prompt_caching and max_price=5, sorted by price.",
+      "assertions": [
+        "list_models is called with capability='prompt_caching' and max_price=5",
+        "All returned models have supports_prompt_caching === 1",
+        "All returned models have input_price_per_mtok ≤ 5 (or null for local)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcpcentral-llm-info": {
+      "type": "http",
+      "url": "https://mcp.llm-info.mcpcentral.io/mcp"
+    }
+  }
+}

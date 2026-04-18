@@ -1,0 +1,38 @@
+{
+  "skill_name": "model-changelog",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What new LLMs came out in the last week?",
+      "expected_output": "A grouped-by-provider digest of the most recent models from list_latest, with one-line entries (name, date, headline capability) and a 2-3 sentence narrative summary.",
+      "assertions": [
+        "list_latest is called with limit ≥ 10",
+        "Output is grouped by provider, not flat",
+        "Each entry shows name, release date, and a headline capability or family note",
+        "A narrative summary at the end calls out at least one cross-cutting pattern",
+        "The digest does not invent models that are not in the list_latest response"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What's new from Anthropic specifically?",
+      "expected_output": "list_latest is called with provider='anthropic', and the digest only includes Anthropic models.",
+      "assertions": [
+        "list_latest is called with provider='anthropic'",
+        "Every model in the digest has provider_id='anthropic'",
+        "If only one model is returned, the response says so explicitly rather than padding with older models"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Give me a curated weekly brief — surface the 3 most interesting releases with full specs.",
+      "expected_output": "Top-line digest plus get_model calls on 3 picks (parallel) with pricing, context window, and capability flags rendered.",
+      "assertions": [
+        "list_latest is called once",
+        "get_model is called exactly 3 times for the curated picks",
+        "get_model calls are issued in parallel",
+        "Curated picks are justified (not just the top 3 by date)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "skill_name": "mcpcentral-llm-info",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "list_latest",
+      "prompt": "Fetch the 10 most recently released models.",
+      "expected_output": "An array of 10 models sorted by sort_date descending, each with provider_id, model_id, display_name, created_at, and capability flags.",
+      "assertions": [
+        "list_latest is called with limit=10",
+        "Response.models has exactly 10 entries",
+        "Entries are sorted by sort_date descending",
+        "Each entry has provider_id and model_id"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "list_latest",
+      "prompt": "Fetch the 5 most recent Gemini releases.",
+      "expected_output": "5 Gemini-only models sorted by date.",
+      "assertions": [
+        "list_latest is called with provider='gemini' and limit=5",
+        "Every entry has provider_id='gemini'"
+      ]
+    }
+  ]
+}

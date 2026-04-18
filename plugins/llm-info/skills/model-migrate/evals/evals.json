@@ -1,0 +1,37 @@
+{
+  "skill_name": "model-migrate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm currently using gpt-4o. What would change if I migrated to claude-sonnet-4-6?",
+      "expected_output": "Side-by-side diff covering pricing, context window, capabilities, SDK-level concerns (message_format, extra_headers, api_version), and rate limits, with a 2-3 sentence summary.",
+      "assertions": [
+        "get_model is called twice — once for openai/gpt-4o and once for anthropic/claude-sonnet-4-6",
+        "The two get_model calls are issued in parallel",
+        "The diff explicitly flags any capability gained or lost (e.g. thinking, vision, json_mode)",
+        "message_format and extra_headers deltas are surfaced as SDK-level concerns",
+        "Pricing delta is shown in both absolute ($/MTok) and percent terms"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Compare claude-3-5-sonnet and claude-opus-4-7 — should I migrate?",
+      "expected_output": "Diff plus a check against the wider claude-4 family (compare_pricing) so the user sees Sonnet 4.6 as a middle option. Recommendation includes the one thing to test first.",
+      "assertions": [
+        "Both models are fetched via get_model",
+        "compare_pricing is called with model_family='claude-4' to surface adjacent Sonnet/Haiku options",
+        "The recommendation explicitly names one thing to test first before fully migrating"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What changes if I move from claude-sonnet-4-20250514 to claude-sonnet-4-6?",
+      "expected_output": "Same-format diff highlighting that message_format is unchanged but extra_headers (the prompt-caching beta header) is dropped on the newer version.",
+      "assertions": [
+        "Both versions of Sonnet 4 are fetched",
+        "The diff calls out extra_headers difference even though message_format is identical",
+        "The diff does NOT claim 'no SDK change required' if extra_headers differs"
+      ]
+    }
+  ]
+}

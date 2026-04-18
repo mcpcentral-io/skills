@@ -1,0 +1,37 @@
+{
+  "skill_name": "model-cost-estimate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm sending ~1M input and 200K output tokens per call, 100 calls a day, expecting 70% cache hit rate. Compare claude-haiku-4-5, claude-sonnet-4-6, and gpt-4o-mini.",
+      "expected_output": "A sorted cost table with monthly cost per model, applying the cache discount only to models with supports_prompt_caching, and a 'cheapest viable' recommendation.",
+      "assertions": [
+        "get_model is called for each named model (parallel)",
+        "Cache discount is applied only to models with supports_prompt_caching === 1",
+        "Models without prompt caching show 'no cache benefit' in their row",
+        "Final recommendation names a single cheapest viable model",
+        "Monthly costs are rounded to 2 decimal places at display time only"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Cheapest model for 50K input × 5K output per call, 10 calls a day, with vision support.",
+      "expected_output": "A cost table filtered to vision-capable models, sorted ascending, with the cheapest viable highlighted.",
+      "assertions": [
+        "Candidate list is filtered to models with capabilities.vision === true",
+        "Models without vision are excluded from the table entirely (not just deprioritized)",
+        "Cheapest viable line names a vision-capable model"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What does it cost to send 10M tokens/day to claude-opus-4-7? No caching.",
+      "expected_output": "Single-model estimate using cache_hit_rate=0, rendering input + output cost components separately.",
+      "assertions": [
+        "cache_hit_rate is treated as 0 (no cache discount applied)",
+        "Input and output components are shown separately",
+        "If 10M tokens/day exceeds opus's tpm_limit budget, the response flags throughput infeasibility"
+      ]
+    }
+  ]
+}

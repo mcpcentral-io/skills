@@ -1,0 +1,27 @@
+{
+  "skill_name": "mcpcentral-llm-info",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "compare_pricing",
+      "prompt": "Compare pricing across the claude-4 family.",
+      "expected_output": "An array of claude-4 family models with input/output/cache prices, sorted by input_price ascending.",
+      "assertions": [
+        "compare_pricing is called with model_family='claude-4'",
+        "Response includes at least Sonnet 4 and Opus 4 variants",
+        "Each entry exposes input_price_per_mtok, output_price_per_mtok, cache_write_price_per_mtok, cache_read_price_per_mtok"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "compare_pricing",
+      "prompt": "Compare gpt-4 and claude-4 families across openai and anthropic.",
+      "expected_output": "Models from both families and providers, suitable for cross-vendor comparison.",
+      "assertions": [
+        "compare_pricing is called with providers=['openai','anthropic']",
+        "Response includes models from both providers",
+        "All models belong to either gpt-4 or claude-4 families when filtered"
+      ]
+    }
+  ]
+}

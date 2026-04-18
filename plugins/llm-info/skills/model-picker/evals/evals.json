@@ -1,0 +1,48 @@
+{
+  "skill_name": "model-picker",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Recommend a vision-capable model under $2 per million input tokens.",
+      "expected_output": "A ranked list of vision-capable models from recommend_model with budget='low' and required_capabilities=['vision']. Each entry shows model id, input/output price per MTok, context window, capability flags, and rationale.",
+      "assertions": [
+        "recommend_model is called with use_case 'vision' and budget 'low'",
+        "required_capabilities includes 'vision'",
+        "All shown candidates have capabilities.vision === true",
+        "Input price per MTok for every candidate is ≤ 2 (or null/local)",
+        "The response cites the registry's rationale verbatim, not invented benchmarks"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What's the best coding model with a long context window? Money no object.",
+      "expected_output": "Recommendations from use_case='code_generation' with budget='high', sorted by score, with rationale highlighting the coding index and context window.",
+      "assertions": [
+        "recommend_model is called with use_case 'code_generation' and budget 'high'",
+        "Limit is at least 3",
+        "Context window is shown for each pick",
+        "Rationale text from the registry (often includes 'Coding index: N') is preserved"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I need a model that supports both function calling and prompt caching.",
+      "expected_output": "Picks filtered to models where capabilities.functions and capabilities.prompt_caching are both true. Cache prices are surfaced.",
+      "assertions": [
+        "required_capabilities includes both 'functions' and 'prompt_caching'",
+        "All shown candidates have both flags true",
+        "For each candidate, get_model is called to surface cache_read_price_per_mtok and cache_write_price_per_mtok"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Just give me the cheapest local model for general chat.",
+      "expected_output": "Recommendation defaults to budget='low' and use_case='chat'; local Ollama / ollama-cloud models with null price are rendered as 'free (local)' rather than crashing.",
+      "assertions": [
+        "recommend_model is called with budget 'low'",
+        "The response includes at least one local model (provider 'ollama' or 'ollama-cloud')",
+        "Models with null prices are displayed as 'free (local)' or equivalent, not as '$null/MTok'"
+      ]
+    }
+  ]
+}

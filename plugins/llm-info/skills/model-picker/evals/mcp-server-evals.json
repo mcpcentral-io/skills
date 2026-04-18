@@ -1,0 +1,40 @@
+{
+  "skill_name": "mcpcentral-llm-info",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "recommend_model",
+      "prompt": "Score the top 3 reasoning models for a low budget.",
+      "expected_output": "An object with `recommendations[]`, each entry containing `model.{provider,model,context_window,input_price,output_price,capabilities}`, `score`, and `rationale`.",
+      "assertions": [
+        "recommend_model is called with use_case 'reasoning' and budget 'low' and limit 3",
+        "Response.recommendations has at least 1 item",
+        "Each item exposes model.capabilities as an object with boolean flags",
+        "Each item has a numeric score in [0, 100]"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "get_model",
+      "prompt": "Get the full spec for anthropic/claude-sonnet-4-6.",
+      "expected_output": "Full registry record including pricing (input, output, cache_read, cache_write), context window, capability flags, rate limits, training cutoff, and documentation URL.",
+      "assertions": [
+        "get_model is called with provider_id='anthropic' and model_id='claude-sonnet-4-6'",
+        "Response includes input_price_per_mtok and output_price_per_mtok",
+        "Response includes supports_prompt_caching",
+        "Response includes context_window > 0"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "get_capability_matrix",
+      "prompt": "Show a capability matrix filtered to providers anthropic and openai.",
+      "expected_output": "A matrix view restricted to Anthropic and OpenAI models showing capability flags, context windows, and pricing.",
+      "assertions": [
+        "get_capability_matrix is called with providers including both 'anthropic' and 'openai'",
+        "Response only includes models from those two providers",
+        "Capability columns include vision, functions, streaming, prompt_caching, json_mode, thinking"
+      ]
+    }
+  ]
+}
