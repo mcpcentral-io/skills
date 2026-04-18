@@ -1,89 +1,101 @@
-# MCPCentral Plugin for Claude Code
+# MCPCentral Plugins for Claude Code
 
-Discover, search, and configure MCP servers — combining a knowledge skill with a semantic search MCP server in a single installable plugin.
+A growing marketplace of single-purpose plugins that wrap the [mcpcentral.io](https://mcpcentral.io) MCP servers. Install one, install several, or install the whole stack.
 
-## What's Included
+## Plugin Matrix
 
-| Component | Type | Description |
-|-----------|------|-------------|
-| **mcp-registry** | Skill | Teaches Claude how to query the [MCP Registry](https://registry.modelcontextprotocol.io) and [mcpcentral.io](https://mcpcentral.io) REST APIs to find, compare, and generate setup configs for MCP servers |
-| **mcpcentral-tool-search** | MCP Server | Semantic + hybrid search over 1000+ MCP tools and servers via [tools.mcpcentral.io](https://tools.mcpcentral.io), with tool schema lookup, recommendations, and sandboxed code execution |
-| **to-text** | Skill | Universal content extraction and summarization — OCR, audio/video transcription, document conversion, and URL extraction with local LLM summarization via Ollama |
+| Plugin | What it wraps | Skills | Install |
+|---|---|---|---|
+| **mcpcentral** *(core)* | mcpcentral-registry, gateway; routes through llm-info for model selection | `mcp-registry`, `totext-local`, `whoami` | `/plugin install mcpcentral@mcpcentral-skills` |
+| **llm-info** | mcpcentral-llm-info | `model-picker`, `model-migrate`, `model-cost-estimate`, `model-changelog` | `/plugin install llm-info@mcpcentral-skills` |
+| **totext-graph** | mcpcentral-totext-cloud | `research-graph`, `entity-dossier`, `citation-tracer`, `knowledge-onboard` | `/plugin install totext-graph@mcpcentral-skills` |
+| **office-sandbox** | mcpcentral-office | `container-run`, `deck-builder` | `/plugin install office-sandbox@mcpcentral-skills` |
+| **research-suite** | llm-info + totext-cloud + office | `research-deck`, `ai-news-brief` | `/plugin install research-suite@mcpcentral-skills` |
 
-**The skill** handles direct registry API calls — searching by keyword, fetching server details, listing versions, and generating `claude_desktop_config.json` / `.mcp.json` snippets from real package metadata.
-
-**The MCP server** adds semantic search (vector embeddings + BM25 hybrid), tool schema retrieval, similarity-based recommendations, and a sandboxed `execute` tool for orchestrating discovered servers.
-
-Together, they give Claude comprehensive MCP server discovery whether you need quick registry lookups or deep semantic search.
-
-## Installation
-
-### Claude Code (Plugin Marketplace)
+## Quick Start
 
 ```bash
 # Add the marketplace
 /plugin marketplace add mcpcentral-io/skills
 
-# Install the plugin
+# Install whatever you want — they're independent
 /plugin install mcpcentral@mcpcentral-skills
+/plugin install llm-info@mcpcentral-skills
+/plugin install totext-graph@mcpcentral-skills
+/plugin install office-sandbox@mcpcentral-skills
+/plugin install research-suite@mcpcentral-skills
 ```
 
-This installs both the skill and auto-connects the MCP server — no separate configuration needed.
+Each plugin auto-wires only the MCP servers it needs.
 
-### Manual Skill Installation
+## Plugins
 
-If you only want the skill (no MCP server), copy the skill folder into your project:
+### mcpcentral (core)
 
-```bash
-git clone https://github.com/mcpcentral-io/skills.git
-cp -r skills/skills/mcp-registry your-project/.claude/skills/
-```
+The original plugin, expanded:
 
-## Authentication
+- **`mcp-registry`** — search the official MCP Registry and mcpcentral.io REST APIs; generate setup configs.
+- **`totext-local`** *(renamed from `to-text` in v1.2.0)* — extract text from images / audio / video / PDFs / Office docs / URLs and summarize. Summarization model is now **selected at runtime** via `mcpcentral-llm-info` instead of hardcoded.
+- **`whoami`** — identity & tenancy introspection: tenant, plan, permissions. Bundles `mcpcentral-mcp-gateway`.
 
-The MCP server at `tools.mcpcentral.io` requires authentication. When connected via the plugin, Claude Code will handle the OAuth flow automatically — you'll be prompted to authenticate in your browser on first use.
+### llm-info
 
-For API key access, visit [mcpcentral.io](https://mcpcentral.io) to generate a key.
+Live LLM model registry across OpenAI, Anthropic, Gemini, Groq, Ollama, Ollama-cloud, etc.
 
-## MCP Server Tools
+- **`model-picker`** — "Which model for X with budget Y?"
+- **`model-migrate`** — "What changes if I move from A to B?" (pricing, capabilities, SDK headers)
+- **`model-cost-estimate`** — "How much per month for this workload across N models?"
+- **`model-changelog`** — "What new LLMs came out this week?"
 
-| Tool | Description |
-|------|-------------|
-| `search_tools` | Semantic + hybrid search for MCP tools and servers |
-| `get_tool_schema` | Full JSON Schema and TypeScript interface for a specific tool |
-| `recommend_tools` | Similarity-based or task-based tool recommendations |
-| `execute` | Run code in a sandbox with bindings to discovered MCP servers (Deprecated) |
-| `list_my_servers` | List your customized collections of MCP servers, managed on [mcpcentral.io](https://mcpcentral.io) |
+### totext-graph
 
-## Skill Capabilities
+Personal document knowledge graph: hybrid search (BM25 + semantic), entity extraction, citation traversal.
 
-The `mcp-registry` skill teaches Claude to:
+- **`research-graph`** — answer a question against your library with citations.
+- **`entity-dossier`** — build a profile for a person / company / topic / date / location.
+- **`citation-tracer`** — trace what cites what, and lineage chains.
+- **`knowledge-onboard`** — bulk-ingest URLs and verify the graph indexed them.
 
-- **Search** the official MCP Registry by keyword
-- **Fetch** server details including packages, environment variables, and remote endpoints
-- **Browse** popular servers via MCPCentral (sorted by GitHub stars)
-- **Generate** setup configs for Claude Desktop, VS Code, and generic `.mcp.json`
-- **Recommend** servers by synthesizing multi-keyword searches
-- **Read** server documentation via repository README fetching
+Pairs naturally with **`totext-local`** (extract a local file) → **`knowledge-onboard`** (push it into the graph).
+
+### office-sandbox
+
+Sandboxed Ubuntu container + a curated PowerPoint template engine.
+
+- **`container-run`** — run Python / Node / shell in an ephemeral container with internet, file IO, and download URLs for artifacts.
+- **`deck-builder`** — generate a real `.pptx` from an outline using one of the bundled templates (with thumbnail previews).
+
+### research-suite
+
+Stitched cross-server workflows for power users.
+
+- **`research-deck`** — search your library → pick a cheap model → render a `.pptx` with citations. Three servers, one prompt.
+- **`ai-news-brief`** — pull the latest model releases → enrich → render as deck or markdown → optionally store back into your library so it's searchable next week.
 
 ## Repository Structure
 
 ```
 .
-├── .claude-plugin/
-│   └── marketplace.json     # Plugin marketplace configuration
-├── .mcp.json                # Bundled MCP server connection
-├── skills/
-│   ├── mcp-registry/         # MCP server discovery skill
-│   └── to-text/              # Universal content extraction skill
-├── README.md
-├── .gitattributes
-└── .gitignore
+├── .claude-plugin/marketplace.json     # 5 plugin entries
+├── .mcp.json                            # all 5 mcpcentral.io servers (dev-time)
+├── skills/                              # mcpcentral core plugin
+│   ├── mcp-registry/
+│   ├── totext-local/                    # renamed from to-text in 1.2.0
+│   └── whoami/
+└── plugins/                             # one subdir per non-core plugin
+    ├── llm-info/         (.mcp.json + 4 skills)
+    ├── totext-graph/     (.mcp.json + 4 skills)
+    ├── office-sandbox/   (.mcp.json + 2 skills)
+    └── research-suite/   (.mcp.json + 2 skills)
 ```
+
+## Authentication
+
+The mcpcentral.io servers require OAuth on first use. Claude Code handles the browser flow automatically. For programmatic / API access, generate a key at [mcpcentral.io](https://mcpcentral.io).
 
 ## Evals
 
-Each skill and MCP server includes an `evals/` directory with evaluation test cases for validating behavior.
+Every skill ships with `evals/evals.json` (skill-level) and, for skills that call MCP tools, `evals/mcp-server-evals.json` (tool-level). The eval files are JSON specs — there's no runner in this repo; they document expected behavior for review and external test harnesses.
 
 ## Links
 
@@ -91,4 +103,3 @@ Each skill and MCP server includes an `evals/` directory with evaluation test ca
 - [MCP Registry](https://registry.modelcontextprotocol.io) — Official MCP server registry
 - [Agent Skills Standard](https://agentskills.io) — Cross-platform skill specification
 - [ClawCentral](https://clawcentral.io) — Our platform
-

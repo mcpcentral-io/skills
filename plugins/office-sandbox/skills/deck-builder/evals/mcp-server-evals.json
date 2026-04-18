@@ -1,0 +1,36 @@
+{
+  "skill_name": "mcpcentral-office",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "container_template_list",
+      "prompt": "List available PowerPoint templates.",
+      "expected_output": "An array of templates with name, category, and metadata.",
+      "assertions": [
+        "container_template_list is called (after container_initialize)",
+        "Response includes at least one template with name and category"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "container_template_info",
+      "prompt": "Get layout details for a specific template.",
+      "expected_output": "An object with theme colors, fonts, layouts (with indices), and master elements.",
+      "assertions": [
+        "container_template_info is called with the chosen template_name",
+        "Response exposes layout indices used by python-pptx",
+        "Theme colors and fonts are returned"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "container_file_download_url",
+      "prompt": "Generate a signed download URL for a built deck.",
+      "expected_output": "A signed URL the user can fetch the deck from.",
+      "assertions": [
+        "container_file_download_url is called with the absolute path to the .pptx",
+        "The URL is returned to the user with a clear note about TTL"
+      ]
+    }
+  ]
+}

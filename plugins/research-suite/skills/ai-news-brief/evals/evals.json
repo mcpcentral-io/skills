@@ -1,0 +1,40 @@
+{
+  "skill_name": "ai-news-brief",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Give me a weekly AI brief in slide format.",
+      "expected_output": "A 5-8 slide .pptx briefing curated from list_latest, each model slide enriched via get_model, with a download URL.",
+      "assertions": [
+        "list_latest is called once with limit ≥ 10",
+        "Curation drops trivial variants (e.g. duplicate previews)",
+        "get_model is called in parallel for each curated pick",
+        "The deck has between 5 and 8 slides (cover + content + closing)",
+        "container_file_download_url is called and returned with TTL note",
+        "Local-model picks render as 'free (local)' rather than '$null/MTok'"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Monthly AI brief in markdown, and save it to my library.",
+      "expected_output": "Markdown output with curated picks; the brief is written to a file in the container, a download URL is generated, and upload_url stores it in totext-cloud.",
+      "assertions": [
+        "Output is markdown, not .pptx",
+        "list_latest is called with a higher limit (≥20) for a monthly window",
+        "container_file_download_url is generated for the markdown file",
+        "upload_url is called against totext-cloud with the brief's URL",
+        "The user is told the upload is async (entities/edges take time)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Brief, but only Anthropic releases.",
+      "expected_output": "list_latest is called with provider='anthropic'; output only includes Anthropic models.",
+      "assertions": [
+        "list_latest is called with provider='anthropic'",
+        "Every pick in the brief has provider_id='anthropic'",
+        "If only 1-2 models are returned, the brief acknowledges that explicitly rather than padding"
+      ]
+    }
+  ]
+}

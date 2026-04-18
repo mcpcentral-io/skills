@@ -1,0 +1,25 @@
+{
+  "skill_name": "mcpcentral-totext-cloud",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "upload_url",
+      "prompt": "Upload a URL into the user's knowledge graph.",
+      "expected_output": "An acknowledgement with the new document_id (or an indication that ingestion is async).",
+      "assertions": [
+        "upload_url is called with a single URL",
+        "Response is recorded so a follow-up list_documents call can verify ingestion"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "rebuild_graph_edges",
+      "prompt": "Rebuild similarity / cites / mentions edges after a bulk import.",
+      "expected_output": "Server-side edge rebuild kicked off; response indicates job status or completion.",
+      "assertions": [
+        "rebuild_graph_edges is called only after a bulk import (not on a single document)",
+        "User has been warned that the operation is expensive"
+      ]
+    }
+  ]
+}

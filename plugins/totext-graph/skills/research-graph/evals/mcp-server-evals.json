@@ -1,0 +1,38 @@
+{
+  "skill_name": "mcpcentral-totext-cloud",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "search_documents",
+      "prompt": "Hybrid search for 'reinforcement learning'.",
+      "expected_output": "An array of documents with id, filename, summary, content_type, quality_score, and previews. Sorted by relevance.",
+      "assertions": [
+        "search_documents is called with query='reinforcement learning' and a sensible limit (5-20)",
+        "Returned documents include id, filename, and summary",
+        "Results appear sorted by relevance (the most relevant doc is first)"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "find_related_documents",
+      "prompt": "Find documents related to a specific document_id via similarity edges.",
+      "expected_output": "An array of related documents discovered through graph edges (similar-to / cites / references), with edge metadata.",
+      "assertions": [
+        "find_related_documents is called with a real document_id (obtained from a prior search_documents call, not invented)",
+        "max_hops defaults to 1 unless the user asked for downstream traversal",
+        "Returned items expose the relationship type (similar-to / cites / references / mentions / etc.)"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "get_document_text",
+      "prompt": "Read the full text of one cited document.",
+      "expected_output": "The full extracted text of the document.",
+      "assertions": [
+        "get_document_text is called only after a search and only on documents we intend to cite",
+        "The document_id passed is one returned by a prior search_documents or find_related_documents call",
+        "The full text is used to extract the verbatim quote shown in the answer"
+      ]
+    }
+  ]
+}

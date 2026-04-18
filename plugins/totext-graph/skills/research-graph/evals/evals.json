@@ -1,0 +1,38 @@
+{
+  "skill_name": "research-graph",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What do I have in my library about reinforcement learning?",
+      "expected_output": "An answer synthesized from search_documents results, with at least one explicit citation (filename + document_id + verbatim quote) and 1-2 related documents flagged as not-consulted.",
+      "assertions": [
+        "search_documents is called with a query containing 'reinforcement learning'",
+        "find_related_documents is called for at least one of the top hits to surface adjacent docs",
+        "The answer includes at least one citation with both a filename and a document_id",
+        "Quotes attributed to a source actually appear in the document_text for that source",
+        "If quality_score is < 60 for a cited doc, the response notes the lower confidence"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Find me everything I've read about Anthropic.",
+      "expected_output": "Combined results from search_documents and explore_entities (entity_type='company', search='Anthropic'), deduplicated by document_id.",
+      "assertions": [
+        "Both search_documents and explore_entities are called",
+        "Results are deduplicated by document_id (no document appears twice)",
+        "Output indicates which documents matched via search vs entity lookup"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What does the user library say about a topic that's definitely not in there?",
+      "expected_output": "Honest 'no documents found' response that explicitly says the library has nothing on the topic and suggests the knowledge-onboard skill — does not fabricate an answer from general knowledge.",
+      "assertions": [
+        "search_documents is called and returns 0 or very-low-relevance hits",
+        "The response explicitly states that the library has no relevant documents",
+        "The response does NOT fabricate an answer from general training knowledge",
+        "The knowledge-onboard skill (or upload_url) is mentioned as a way to add documents"
+      ]
+    }
+  ]
+}

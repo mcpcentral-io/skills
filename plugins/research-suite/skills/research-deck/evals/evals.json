@@ -1,0 +1,40 @@
+{
+  "skill_name": "research-deck",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build me a 6-slide briefing on reinforcement learning from my library.",
+      "expected_output": "A .pptx deck with 6 slides, each citing real documents from the user's library by filename. The response reports the sources consulted, the model picked for the outline, the template used, and a signed download URL with TTL.",
+      "assertions": [
+        "search_documents is called with a query containing 'reinforcement learning'",
+        "find_related_documents is called for at least one of the top hits",
+        "recommend_model is called once with use_case='analysis' and budget='low'",
+        "The picked model has capabilities.functions === true",
+        "Exactly 6 slides are produced (or close to the requested count)",
+        "Every slide that quotes the library cites a filename in a footer or annotation",
+        "container_file_download_url is called and the URL + TTL note are returned"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Make a deck on a topic that's not in my library.",
+      "expected_output": "Honest empty-library response — does not fabricate a deck from general knowledge.",
+      "assertions": [
+        "search_documents returns 0 or very-low-relevance hits",
+        "The response explicitly states the library has no relevant documents",
+        "No deck is generated; office-sandbox is NOT invoked",
+        "knowledge-onboard or upload_url is suggested as the next step"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Use the executive template and only the 3 highest-quality docs.",
+      "expected_output": "Template is forced to 'executive' (or named match), only 3 sources are kept based on quality_score, and citations reflect only those.",
+      "assertions": [
+        "container_template_info is called for the executive template (no discovery loop)",
+        "Exactly 3 documents from the search results are kept (the 3 with highest quality_score)",
+        "All citations on slides reference one of those 3 documents"
+      ]
+    }
+  ]
+}

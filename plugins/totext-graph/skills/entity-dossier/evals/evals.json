@@ -1,0 +1,36 @@
+{
+  "skill_name": "entity-dossier",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build me a dossier on Anthropic.",
+      "expected_output": "A structured dossier with entity_id, document count, top documents with summaries, co-occurrence patterns, and 2-3 follow-up research questions.",
+      "assertions": [
+        "explore_entities is called with search='Anthropic' and entity_type='company'",
+        "get_entity_documents is called with the resolved entity_id",
+        "If multiple entities match, the response disambiguates before continuing",
+        "Document summaries come from get_document_summary, not from get_document_text",
+        "The dossier ends with 2-3 explicit follow-up questions"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What documents mention both OpenAI and Anthropic?",
+      "expected_output": "A list of documents that contain both entities, retrieved via find_entity_connections with connection_type='and'.",
+      "assertions": [
+        "find_entity_connections is called with entity_names including both 'OpenAI' and 'Anthropic'",
+        "connection_type is 'and', not 'or'",
+        "Returned documents are reported as containing both entities, not just one"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Tell me about the topic 'reinforcement learning'.",
+      "expected_output": "Topic dossier with documents, co-occurring entities, and research follow-ups.",
+      "assertions": [
+        "explore_entities is called with entity_type='topic' and search='reinforcement learning'",
+        "If both 'reinforcement learning' and 'Reinforcement learning' are returned as separate entities, the response notes the duplication and considers both"
+      ]
+    }
+  ]
+}

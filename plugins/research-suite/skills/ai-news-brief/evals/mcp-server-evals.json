@@ -1,0 +1,36 @@
+{
+  "skill_name": "research-suite",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "list_latest",
+      "prompt": "Pull the most recent releases for the brief.",
+      "expected_output": "Sorted list of recent models.",
+      "assertions": [
+        "list_latest is called with limit ≥ 10",
+        "If a provider filter was requested, it is applied"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "get_model",
+      "prompt": "Enrich each curated pick with full spec.",
+      "expected_output": "Full record per model with capabilities and pricing.",
+      "assertions": [
+        "get_model is called once per curated pick (no duplicates)",
+        "Calls are issued in parallel"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "upload_url",
+      "prompt": "Optionally store the brief back into totext-cloud.",
+      "expected_output": "The brief becomes a document in the user's library.",
+      "assertions": [
+        "upload_url is called only when the user asked to store the brief",
+        "The URL passed is the signed download URL of the brief generated in the container",
+        "The user is told the ingestion is async"
+      ]
+    }
+  ]
+}

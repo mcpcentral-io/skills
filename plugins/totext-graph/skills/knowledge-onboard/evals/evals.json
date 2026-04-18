@@ -1,0 +1,37 @@
+{
+  "skill_name": "knowledge-onboard",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add these 5 URLs to my library: <url1>, <url2>, <url3>, <url4>, <url5>",
+      "expected_output": "Parallel uploads with a per-URL success/failure/duplicate report and a delta showing the library doc count before vs after.",
+      "assertions": [
+        "upload_url is called for each of the 5 URLs",
+        "Calls are batched in parallel (not strictly sequential)",
+        "list_documents (or list_projects) is called both before and after to compute the delta",
+        "Per-URL results are reported (succeeded / failed / duplicate)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I just imported 200 papers — please rebuild the graph and verify entities materialized.",
+      "expected_output": "rebuild_graph_edges is called once, followed by explore_entities to confirm entity extraction.",
+      "assertions": [
+        "User is warned that rebuild_graph_edges is expensive before it runs",
+        "rebuild_graph_edges is called exactly once for the batch (not per-document)",
+        "explore_entities is called after the rebuild to verify new entities exist",
+        "Output reports the entity count (or sample) post-rebuild"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Clean up storage for documents I've deleted.",
+      "expected_output": "cleanup_orphaned_vectors is called after explaining what it does, with a before/after vector-count summary if available.",
+      "assertions": [
+        "Response explains what cleanup_orphaned_vectors does before invoking it",
+        "cleanup_orphaned_vectors is called",
+        "Response describes the cleanup as removing embeddings for deleted documents (not the documents themselves)"
+      ]
+    }
+  ]
+}

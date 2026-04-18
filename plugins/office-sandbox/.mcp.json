@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcpcentral-office": {
+      "type": "http",
+      "url": "https://mcp.office.mcpcentral.io/mcp"
+    }
+  }
+}

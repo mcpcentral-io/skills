@@ -1,0 +1,37 @@
+{
+  "skill_name": "container-run",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Run python3 -c \"print(2**40)\" in the sandbox.",
+      "expected_output": "stdout containing 1099511627776, exit code 0, no stderr.",
+      "assertions": [
+        "container_initialize is called before container_exec",
+        "container_exec runs the exact command 'python3 -c \"print(2**40)\"'",
+        "Returned stdout contains '1099511627776'",
+        "Reported exit code is 0"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Fetch https://example.com/data.csv, compute the mean of column 'price', and return the result.",
+      "expected_output": "Container fetches the URL, installs pandas, reads the CSV, computes the mean, and returns it. Output also includes a download URL for any saved artifact.",
+      "assertions": [
+        "Dependencies (pandas, requests or similar) are installed via pip in the container",
+        "The Python snippet is written to a file via container_file_write rather than passed inline if longer than a one-liner",
+        "The mean is reported in stdout or read back from a JSON output file",
+        "If an output file is produced, container_file_download_url is called and the URL is returned"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Run a script that takes 4 minutes — make sure it doesn't time out.",
+      "expected_output": "Long-running script is forked into the background, status is polled via container_ping or file reads, and the user is told the script is still running rather than the call hanging.",
+      "assertions": [
+        "The script is written to a file via container_file_write, not passed inline",
+        "The script is launched in the background (e.g. via nohup or & redirection), not blocked on inline",
+        "The response explains the polling strategy rather than blocking on a single long container_exec call"
+      ]
+    }
+  ]
+}

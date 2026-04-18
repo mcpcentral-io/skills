@@ -1,0 +1,37 @@
+{
+  "skill_name": "research-suite",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "search_documents",
+      "prompt": "Hybrid retrieval over the user's library for the deck topic.",
+      "expected_output": "Documents ranked by relevance with summaries and quality scores.",
+      "assertions": [
+        "search_documents is called once at the top of the pipeline",
+        "Limit is between 5 and 20"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "recommend_model",
+      "prompt": "Pick a low-budget analysis model for outline generation.",
+      "expected_output": "Top recommendation with capabilities.functions === true.",
+      "assertions": [
+        "recommend_model is called with use_case='analysis' and budget='low'",
+        "The first candidate selected has capabilities.functions === true (skip candidates that lack function calling)"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "container_exec",
+      "prompt": "Build a .pptx using python-pptx in the container.",
+      "expected_output": "Build script runs to completion; .pptx is saved to a known path; download URL is generated.",
+      "assertions": [
+        "container_initialize is called before container_exec",
+        "python-pptx is pip-installed in the container",
+        "The build script is written via container_file_write before container_exec runs it",
+        "container_file_download_url is called with the saved .pptx path"
+      ]
+    }
+  ]
+}

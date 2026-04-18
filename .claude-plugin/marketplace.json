@@ -5,18 +5,63 @@
     "email": "support@mcpcentral.io"
   },
   "metadata": {
-    "description": "MCPCentral plugin: MCP server discovery skill + semantic tool search MCP server",
-    "version": "1.1.0"
+    "description": "MCPCentral plugins: MCP server discovery, local content extraction with model routing, identity, LLM model registry, personal knowledge graph, sandboxed execution + decks, and end-to-end research workflows",
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "mcpcentral",
-      "description": "MCP server discovery, semantic tool search, setup configuration, and universal content extraction",
+      "description": "MCP server discovery (mcp-registry), universal local content extraction with runtime model routing (totext-local), and identity introspection (whoami)",
       "source": "./",
       "strict": false,
       "skills": [
         "./skills/mcp-registry",
-        "./skills/to-text"
+        "./skills/totext-local",
+        "./skills/whoami"
+      ]
+    },
+    {
+      "name": "llm-info",
+      "description": "Live LLM model registry skills: pick the right model, plan migrations, estimate cost, and digest the latest releases. Wraps mcpcentral-llm-info.",
+      "source": "./plugins/llm-info",
+      "strict": false,
+      "skills": [
+        "./skills/model-picker",
+        "./skills/model-migrate",
+        "./skills/model-cost-estimate",
+        "./skills/model-changelog"
+      ]
+    },
+    {
+      "name": "totext-graph",
+      "description": "Personal document knowledge-graph skills: research-graph, entity-dossier, citation-tracer, knowledge-onboard. Wraps mcpcentral-totext-cloud.",
+      "source": "./plugins/totext-graph",
+      "strict": false,
+      "skills": [
+        "./skills/research-graph",
+        "./skills/entity-dossier",
+        "./skills/citation-tracer",
+        "./skills/knowledge-onboard"
+      ]
+    },
+    {
+      "name": "office-sandbox",
+      "description": "Sandboxed Ubuntu container (Python/Node/git) and PowerPoint template engine. Wraps mcpcentral-office.",
+      "source": "./plugins/office-sandbox",
+      "strict": false,
+      "skills": [
+        "./skills/container-run",
+        "./skills/deck-builder"
+      ]
+    },
+    {
+      "name": "research-suite",
+      "description": "End-to-end cross-server workflows: research-deck (graph → model picker → .pptx) and ai-news-brief (latest models → digest → optional library storage). Wraps mcpcentral-llm-info, mcpcentral-totext-cloud, and mcpcentral-office.",
+      "source": "./plugins/research-suite",
+      "strict": false,
+      "skills": [
+        "./skills/research-deck",
+        "./skills/ai-news-brief"
       ]
     }
   ]

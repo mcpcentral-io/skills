@@ -1,0 +1,36 @@
+{
+  "skill_name": "mcpcentral-office",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "container_ping",
+      "prompt": "Check if the container is running.",
+      "expected_output": "An object reporting container liveliness; if not running, an error indicating start() should be called.",
+      "assertions": [
+        "container_ping is called with no parameters",
+        "Response is interpreted to decide whether container_initialize must be called next"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "container_initialize",
+      "prompt": "Start (or restart) the container.",
+      "expected_output": "Container is started; subsequent container_exec calls succeed.",
+      "assertions": [
+        "container_initialize is called when container_ping reports not running",
+        "container_initialize is treated as idempotent (safe to call when unsure)"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "container_exec",
+      "prompt": "Run a python3 one-liner.",
+      "expected_output": "stdout, stderr, and exit code returned.",
+      "assertions": [
+        "container_exec is called with the exact command string",
+        "The command uses 'python3' (not 'python')",
+        "Returned object exposes stdout, stderr, and exit code"
+      ]
+    }
+  ]
+}

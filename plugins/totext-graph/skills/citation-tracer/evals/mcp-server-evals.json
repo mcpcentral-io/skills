@@ -1,0 +1,26 @@
+{
+  "skill_name": "mcpcentral-totext-cloud",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "trace_document_lineage",
+      "prompt": "Trace the lineage of a document.",
+      "expected_output": "An object representing the supersedes/precedes chain for the document.",
+      "assertions": [
+        "trace_document_lineage is called with a real document_id (resolved via search, not invented)",
+        "Response includes the document and any predecessors/successors"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "graph_search",
+      "prompt": "Find inbound citations for a document via graph traversal.",
+      "expected_output": "Documents reachable from the start document through the specified edge types within max_hops.",
+      "assertions": [
+        "graph_search is called with start_document_id set",
+        "edge_types restricts traversal to citation-style edges (cites, references) for citation traversal",
+        "max_hops is ≤ 2 by default"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "mcpcentral-llm-info": {
+      "type": "http",
+      "url": "https://mcp.llm-info.mcpcentral.io/mcp"
+    },
+    "mcpcentral-totext-cloud": {
+      "type": "http",
+      "url": "https://totext.mcpcentral.io/mcp"
+    },
+    "mcpcentral-office": {
+      "type": "http",
+      "url": "https://mcp.office.mcpcentral.io/mcp"
+    }
+  }
+}

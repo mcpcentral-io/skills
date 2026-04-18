@@ -1,0 +1,27 @@
+{
+  "skill_name": "citation-tracer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Trace the lineage of the reinforcement learning Wikipedia article in my library.",
+      "expected_output": "Lineage tree showing supersedes/precedes chain, outbound cites/references, and inbound cited-by (max 2 hops).",
+      "assertions": [
+        "search_documents is called to resolve the starting document_id (not invented)",
+        "trace_document_lineage is called on the resolved document_id",
+        "find_related_documents is called with relationship_types=['cites','references']",
+        "graph_search is called with edge_types including 'cites' and 'references' for inbound traversal",
+        "max_hops never exceeds 2 unless the user explicitly asked for deeper traversal"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Show me what cites document abc-123.",
+      "expected_output": "Inbound citation list (graph_search with edge_types=['cites']) for the named document_id, max_hops=2.",
+      "assertions": [
+        "graph_search is called with start_document_id='abc-123'",
+        "edge_types restricts traversal to citation-style edges, not all semantic edges",
+        "If no citations are found, the response explains 'no citation edges in the graph' rather than claiming uniqueness"
+      ]
+    }
+  ]
+}

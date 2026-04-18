@@ -1,0 +1,27 @@
+{
+  "skill_name": "mcpcentral-totext-cloud",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "explore_entities",
+      "prompt": "Find the entity 'Anthropic' as a company.",
+      "expected_output": "An array of entity records with entity_id, name, entity_type, and document_count.",
+      "assertions": [
+        "explore_entities is called with search='Anthropic' and entity_type='company'",
+        "All returned entities have entity_type='company'",
+        "Results include the entity_id needed for downstream calls"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "find_entity_connections",
+      "prompt": "Find documents that mention both Anthropic and OpenAI.",
+      "expected_output": "Documents in which both entities co-occur.",
+      "assertions": [
+        "find_entity_connections is called with entity_names=['Anthropic','OpenAI']",
+        "connection_type='and' is set explicitly",
+        "Each returned document mentions both entities (not just one)"
+      ]
+    }
+  ]
+}

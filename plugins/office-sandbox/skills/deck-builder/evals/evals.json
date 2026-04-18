@@ -1,0 +1,40 @@
+{
+  "skill_name": "deck-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build me a 5-slide intro deck on reinforcement learning.",
+      "expected_output": "A .pptx file built from a chosen template with title slide, 3 content slides, and a closing slide. Output includes the template name, slide-by-slide layout list, and a download URL.",
+      "assertions": [
+        "container_initialize is called before any template / exec call",
+        "container_template_list (or _categories) is called to choose a template",
+        "container_template_info is called for the chosen template before slides are written",
+        "python-pptx is pip-installed in the container",
+        "The build script is written via container_file_write, not via inline exec",
+        "container_file_download_url is called and the URL is returned to the user",
+        "The user is told that the download URL has a TTL"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Use the 'minimal' template to render this outline: Title / 3 bullets / closing.",
+      "expected_output": "Skips template discovery, fetches container_template_info('minimal') directly, renders 3 slides matching the outline, returns download URL.",
+      "assertions": [
+        "container_template_info is called with template_name='minimal' (or the named template)",
+        "container_template_list is NOT called (template is already named)",
+        "Exactly 3 slides are produced",
+        "Layouts match the outline (title, title+content, title)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Build a deck and include this image as the second slide: <image_url>.",
+      "expected_output": "Image is uploaded to the container first, deck is built referencing the local image path, picture-with-caption layout is used.",
+      "assertions": [
+        "Image is fetched and written to the container via container_file_write or container_file_upload_url",
+        "python-pptx reads the image from the local container path, not from a URL",
+        "The slide uses a picture-with-caption layout (or similar)"
+      ]
+    }
+  ]
+}
