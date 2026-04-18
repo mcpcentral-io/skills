@@ -1,0 +1,42 @@
+{
+  "skill_name": "totext-local",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "recommend_model",
+      "prompt": "Pick a vision-capable model for OCR with a low budget.",
+      "expected_output": "A list of model recommendations from mcpcentral-llm-info filtered to models that support vision, with use_case='vision' and budget='low'. Each entry includes provider, model, capabilities, and rationale.",
+      "assertions": [
+        "recommend_model is called with use_case: \"vision\"",
+        "recommend_model is called with budget: \"low\"",
+        "recommend_model is called with required_capabilities including \"vision\"",
+        "At least one returned model has capabilities.vision === true",
+        "The pick_summarizer.py script accepts the response and returns a non-fallback (source: \"llm-info\") result"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "recommend_model",
+      "prompt": "Pick a model for analyzing a 200KB PDF transcript with a medium budget.",
+      "expected_output": "Recommendations from mcpcentral-llm-info with use_case='analysis' (because size > 50KB) and budget='medium'. The picked model should have a long context window suitable for analysis.",
+      "assertions": [
+        "recommend_model is called with use_case: \"analysis\" (not \"chat\") because the input exceeds 50KB",
+        "recommend_model is called with budget: \"medium\"",
+        "Returned models have a context_window large enough for the 200KB input",
+        "Rationale text mentions context window or coding/analysis suitability"
+      ]
+    },
+    {
+      "id": 3,
+      "tool": "recommend_model",
+      "prompt": "What happens when mcpcentral-llm-info is unreachable during model selection?",
+      "expected_output": "pick_summarizer.py detects the failure (no JSON, error, or empty recommendations array), falls back to the static map, and returns source=\"fallback\". The skill continues processing without erroring.",
+      "assertions": [
+        "pick_summarizer.py does not raise when --llm-info-json is missing or unparsable",
+        "The returned object has source: \"fallback\"",
+        "The returned model_id matches the static fallback for that content type",
+        "The host (Claude Code) treats the fallback as a valid pick and proceeds with summarization"
+      ]
+    }
+  ]
+}

@@ -1,16 +1,19 @@
 {
-  "skill_name": "to-text",
+  "skill_name": "totext-local",
   "evals": [
     {
       "id": 1,
       "prompt": "Extract the text from this receipt image: receipt.jpg",
-      "expected_output": "Standardized JSON with `text` containing the OCR'd receipt content (tables/columns preserved as markdown), `summary` generated from the ocr.md prompt, and `metadata` with `source_type: \"image\"` and the original filename.",
+      "expected_output": "Standardized JSON with `text` containing the OCR'd receipt content (tables/columns preserved as markdown), `summary` generated from the ocr.md prompt using a vision-capable model, and `metadata` with `source_type: \"image\"`, the original filename, and a `summarizer` block recording which model was picked.",
       "assertions": [
         "local-vision MCP tool is called for OCR extraction",
         "Tables and columns in the receipt are preserved as markdown in the text field",
+        "scripts/pick_summarizer.py is invoked with content_type 'image'",
+        "The picked model has vision: true (verified via the recommend_model response or the static fallback)",
         "prompts/ocr.md is loaded and used for summarization",
         "Output is a JSON object with text, summary, and metadata fields",
-        "metadata.source_type is \"image\""
+        "metadata.source_type is \"image\"",
+        "metadata.summarizer.source is one of \"llm-info\", \"fallback\", or \"hardcoded\""
       ]
     },
     {
@@ -19,6 +22,7 @@
       "expected_output": "Standardized JSON with `text` containing the extracted article content, `summary` structured with Key Points and Main Takeaway sections (from url.md prompt), and `metadata` reflecting the URL as source with `source_type: \"url\"`.",
       "assertions": [
         "crawling_exa is called with the provided URL",
+        "scripts/pick_summarizer.py is invoked with content_type 'url'",
         "prompts/url.md is loaded and used for summarization",
         "The summary includes Key Points and Main Takeaway sections",
         "metadata.source_type is \"url\"",
@@ -31,6 +35,7 @@
       "expected_output": "Standardized JSON with `text` containing the full transcript (with timestamps if present), `summary` generated from the transcript.md prompt, and `metadata` with `source_type: \"audio\"` and the original filename.",
       "assertions": [
         "faster-whisper is used for transcription with model large-v3 at /Users/cam/.cache/whisper/large-v3.pt",
+        "scripts/pick_summarizer.py is invoked with content_type 'audio'",
         "prompts/transcript.md is loaded and used for summarization",
         "Timestamps are included in the text field if present in the transcript",
         "metadata.source_type is \"audio\"",
@@ -40,9 +45,11 @@
     {
       "id": 4,
       "prompt": "What does this research paper cover? research_paper.pdf",
-      "expected_output": "Standardized JSON with `text` containing the extracted PDF content, `summary` structured with Overview and Key Sections (from document.md prompt), and `metadata` with `source_type: \"pdf\"` and the original filename.",
+      "expected_output": "Standardized JSON with `text` containing the extracted PDF content, `summary` structured with Overview and Key Sections (from document.md prompt), and `metadata` with `source_type: \"pdf\"` and the original filename. Because the PDF is >50KB, the picker should request use_case 'analysis'.",
       "assertions": [
         "markitdown is used to extract the PDF content to markdown, then Claude analyzes the output",
+        "scripts/pick_summarizer.py is invoked with content_type 'pdf' and a non-zero --size-bytes value",
+        "If size > 50KB the use_case passed to recommend_model is 'analysis', not 'chat'",
         "prompts/document.md is loaded and used for summarization",
         "The summary includes Overview and Key Sections",
         "metadata.source_type is \"pdf\"",
@@ -57,8 +64,20 @@
         "Each file is processed independently, not as a combined blob",
         "slides.pptx uses markitdown for extraction then Claude analysis and returns a complete text/summary/metadata result",
         "photo.png uses local-vision MCP for OCR and returns a complete text/summary/metadata result",
+        "The vision pick for photo.png is reused from cache and not re-fetched for slides.pptx",
         "unknown.xyz returns an error object with an error message and metadata but does not stop batch processing",
         "The two valid files (slides.pptx and photo.png) return complete results despite the error on unknown.xyz"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Extract text from screenshot.png while the mcpcentral-llm-info server is unreachable.",
+      "expected_output": "OCR completes via local-vision; pick_summarizer.py falls back to the static map (qwen2.5-vl:latest for image), sets metadata.summarizer.source to \"fallback\", and returns a valid result object.",
+      "assertions": [
+        "scripts/pick_summarizer.py runs even when mcpcentral-llm-info returns no response",
+        "The static fallback maps image → qwen2.5-vl:latest",
+        "metadata.summarizer.source is \"fallback\"",
+        "The skill does not error or refuse to process when the registry is unreachable"
       ]
     }
   ]

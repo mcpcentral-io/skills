@@ -1,0 +1,28 @@
+{
+  "skill_name": "mcpcentral-mcp-gateway",
+  "evals": [
+    {
+      "id": 1,
+      "tool": "get_user_info",
+      "prompt": "Fetch the current user identity from the gateway.",
+      "expected_output": "An object with `success: true`, `authenticated: true`, `user.{id,email,name,authType}`, `access.{instanceId,subdomain,tenantId,authenticatedAt}`, `organization.{customerId,companyName,plan,planDisplayName}`, `authorization.{groups,roles,permissions[]}`, and `session.{authProvider,isServiceUser,...}`.",
+      "assertions": [
+        "get_user_info is called with no parameters",
+        "Response includes success: true and authenticated: true",
+        "authorization.permissions is an array (may be empty)",
+        "user.id is present and non-empty"
+      ]
+    },
+    {
+      "id": 2,
+      "tool": "get_tenant_info",
+      "prompt": "Fetch the static tenant/instance configuration.",
+      "expected_output": "An object with `success: true`, `TENANT_ID`, `CUSTOMER_ID`, `SUBDOMAIN`, `PLAN`, `COMPANY_NAME`, `TEMPLATE_ID`, and `retrievedAt`.",
+      "assertions": [
+        "get_tenant_info is called with no parameters",
+        "Response includes TENANT_ID and TEMPLATE_ID",
+        "Fields that are not configured come back as the literal string 'Not configured' (the consumer is expected to filter these out)"
+      ]
+    }
+  ]
+}

@@ -21,7 +21,7 @@ ollama pull qwen2.5-vl:latest
 
 **Cloud alternative:** Mistral OCR MCP offers high-accuracy cloud OCR when local options are insufficient.
 
-### 2. mcp-ollama (Summarization)
+### 2. mcp-ollama (Summarization backend)
 
 ```bash
 # Run via uvx
@@ -34,15 +34,30 @@ pip install mcp-ollama
 **Ensure Ollama is running:**
 ```bash
 ollama serve
-ollama pull qwen3:latest  # Recommended model
+ollama pull qwen3:latest      # text fallback
+ollama pull qwen2.5-vl:latest # vision fallback
 ```
 
 **Tool Interface:**
 - Tool: `generate` or `chat`
 - Parameters:
-  - `model`: "qwen3:latest" (or preferred)
+  - `model`: chosen by `scripts/pick_summarizer.py` (no longer hardcoded)
   - `prompt`: Full prompt with content
   - `temperature`: 0 (for consistency)
+
+### 2a. mcpcentral-llm-info (Model selection)
+
+The summarization model is **selected at runtime** by `mcpcentral-llm-info`, not hardcoded. This server is bundled with the `mcpcentral` plugin's `.mcp.json`, so no extra setup is needed beyond installing the plugin.
+
+**Tool Interface:**
+- Tool: `recommend_model`
+- Parameters:
+  - `use_case`: derived from input type (`vision` for images, `analysis` for big docs, `chat` otherwise)
+  - `budget`: `low` | `medium` | `high` (default `low`)
+  - `required_capabilities`: e.g. `["vision"]` for image inputs
+- Output: ranked candidates with `provider`, `model`, `capabilities`, and `rationale`
+
+The `scripts/pick_summarizer.py` helper wraps this call, validates capabilities, caches per session, and falls back to the static map if the registry is unreachable.
 
 ### 3. exa-mcp-server (URL Extraction)
 
@@ -149,12 +164,16 @@ curl http://localhost:11434/api/generate -d '{"model":"qwen3:latest","prompt":"t
 
 ## Model Recommendations
 
-| Task | Model | Notes |
-|------|-------|-------|
-| General summary | qwen3:latest | Good balance |
-| Long documents | qwen3:32b | Better context |
-| Lightweight/fast | llama3.3:8b | Good for 8GB RAM |
-| Technical | codellama:latest | Code-aware |
-| Fast | phi3:mini | Fastest option |
+The picker (`scripts/pick_summarizer.py`) consults `mcpcentral-llm-info` at runtime, so the table below is a **fallback reference** only — it's the static map used when the registry is unreachable.
 
-**Note:** Qwen3.5 does not yet have Ollama GGUF support (llama.cpp only) — use `qwen3:latest` for now.
+| Content Type | Static Fallback | Notes |
+|---|---|---|
+| image | qwen2.5-vl:latest | requires `vision: true` |
+| pdf / office / text (>50KB) | qwen3:latest | analysis use_case |
+| pdf / office / text (≤50KB) | qwen3:latest | chat use_case |
+| spreadsheet / data | qwen3:latest | structured input |
+| audio / video / url | qwen3:latest | transcripts / articles |
+
+For more capable picks (e.g. Claude Haiku 4.5, Gemini 3 Flash, Kimi K2), install the `llm-info` plugin and let `recommend_model` choose live.
+
+**Note:** Qwen3.5 does not yet have Ollama GGUF support (llama.cpp only) — `qwen3:latest` is the safe default.

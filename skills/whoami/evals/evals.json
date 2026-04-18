@@ -1,0 +1,37 @@
+{
+  "skill_name": "whoami",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Who am I logged in as on mcpcentral?",
+      "expected_output": "A compact report showing user id/email, tenant id, plan (or 'Not configured' filtered out), and the list of granted permissions, sourced from real get_user_info + get_tenant_info MCP calls.",
+      "assertions": [
+        "get_user_info is called",
+        "get_tenant_info is called",
+        "The two calls are issued in parallel, not sequentially",
+        "The report includes user id, tenant id, and the permissions array",
+        "Fields returning the literal string 'Not configured' or 'Not available' are filtered out or shown as missing, not displayed as real values"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "What plan am I on and do I have admin permission?",
+      "expected_output": "Plan name (or 'Not configured' if missing) plus a clear yes/no on whether mcp.admin is in the permissions array.",
+      "assertions": [
+        "The response answers both questions explicitly",
+        "Permissions are checked against the live get_user_info response, not assumed",
+        "If plan is 'Not configured', the response says so explicitly rather than inventing a tier"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Show me everything mcpcentral knows about my session.",
+      "expected_output": "Full structured report with user, tenant, permissions, and session blocks (auth provider, isServiceUser, authenticatedAt timestamp).",
+      "assertions": [
+        "Both MCP tools are called",
+        "Output includes a session block with authProvider and authenticatedAt",
+        "isServiceUser is reported but not flagged as a security concern"
+      ]
+    }
+  ]
+}
